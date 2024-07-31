@@ -10,7 +10,9 @@ import { Planet } from './planets/planet.entity';
 import { StarSystem } from './star-systems/star-system.entity';
 import { Character } from './characters/character.entity';
 import { SpaceShip } from './space-ships/space-ship.entity';
-
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { User } from './users/user.entity'
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { SpaceShip } from './space-ships/space-ship.entity';
       username: 'root',
       password: '1234',
       database: 'star-wars-db',
-      entities: [Planet, StarSystem, Character, SpaceShip],
+      entities: [Planet, StarSystem, Character, SpaceShip, User],
       synchronize: true,
     }),
     PlanetsModule,
@@ -29,6 +31,8 @@ import { SpaceShip } from './space-ships/space-ship.entity';
     CharactersModule,
     SpaceShipsModule,
     StarSystemsModule,
+    UsersModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

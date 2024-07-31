@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { CharactersService } from './characters.service';
 import { Character } from './character.entity';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('characters')
 export class CharactersController {
     constructor(private readonly characterService: CharactersService) {}

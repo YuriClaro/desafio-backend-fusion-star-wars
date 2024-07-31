@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { SpaceShipsService } from './space-ships.service';
 import { SpaceShip } from './space-ship.entity';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('spaceships')
 export class SpaceShipsController {
     constructor(private readonly spaceshipService: SpaceShipsService) {}

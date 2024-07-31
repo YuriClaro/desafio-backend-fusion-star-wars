@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Put, Param, Delete  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { StarSystemsService } from './star-systems.service';
 import { StarSystem } from './star-system.entity';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('star-systems')
 export class StarSystemsController {
     constructor(private readonly starSystemService: StarSystemsService) {}

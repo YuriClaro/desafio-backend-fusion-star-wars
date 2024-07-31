@@ -22,7 +22,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.username, loginDto.password);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Nome de usuario ou senha inválida');
     }
     const payload = { username: user.username, sub: user.id };
     return {

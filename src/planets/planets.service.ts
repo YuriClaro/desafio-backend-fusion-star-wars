@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Planet } from './planet.entity'
@@ -27,7 +27,11 @@ export class PlanetsService {
         return this.findPlanetById(id);
     }
 
-    async remove(id: number): Promise<void> {
-        await this.planetRepository.delete(id);
+    async remove(id: number): Promise<boolean> {
+        const result = await this.planetRepository.delete(id);
+        if (result.affected === 0) {
+            throw new NotFoundException(`Planeta com o ID: ${id} não encontrado`);
+        }
+        return result.affected > 0;
     }
 }

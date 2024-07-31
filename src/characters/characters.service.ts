@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Character } from './character.entity'
@@ -28,7 +28,11 @@ export class CharactersService {
         return this.findCharacterById(id);
     }
 
-    async remove(id: number): Promise<void> {
-        await this.characterRepository.delete(id);
+    async remove(id: number): Promise<boolean> {
+        const result = await this.characterRepository.delete(id);
+        if (result.affected === 0) {
+            throw new NotFoundException(`Personagem com o ID: ${id} não encontrado.`)
+        }
+        return result.affected > 0;
     }
 }

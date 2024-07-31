@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SpaceShip } from './space-ship.entity'
@@ -27,7 +27,11 @@ export class SpaceShipsService {
         return this.findSpaceShipById(id);
     }
 
-    async remove(id: number): Promise<void> {
-        await this.spaceshipRepository.delete(id);
+    async remove(id: number): Promise<boolean> {
+        const result = await this.spaceshipRepository.delete(id);
+        if (result.affected === 0) {
+            throw new NotFoundException(`Planeta com o ID: ${id} não encontrado`);
+        }
+        return result.affected > 0;
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StarSystem } from './star-system.entity'
@@ -27,7 +27,11 @@ export class StarSystemsService {
         return this.findStarSystemById(id);
     }
 
-    async remove(id: number): Promise<void> {
-        await this.starsystemRepository.delete(id);
+    async remove(id: number): Promise<boolean> {
+        const result = await this.starsystemRepository.delete(id);
+        if (result.affected === 0) {
+            throw new NotFoundException(`Sistema solar com o ID: ${id} não encontrado`);
+        }
+        return result.affected > 0;
     }
 }

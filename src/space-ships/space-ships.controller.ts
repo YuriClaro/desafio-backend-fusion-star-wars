@@ -4,11 +4,11 @@ import { SpaceShip } from './space-ship.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ValidationException } from 'src/exceptions/validation.exception';
 
-@UseGuards(JwtAuthGuard)
 @Controller('spaceships')
 export class SpaceShipsController {
     constructor(private readonly spaceshipService: SpaceShipsService) {}
 
+    @UseGuards(JwtAuthGuard)
     @Post()
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true}))
     async create(@Body() createSpaceShipaDto: SpaceShip): Promise<SpaceShip> {
@@ -53,6 +53,7 @@ export class SpaceShipsController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Put(':id')
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true}))
     async update(@Param('id') id: number, @Body() updatedSpaceShipDto: SpaceShip): Promise<SpaceShip> {
@@ -74,6 +75,7 @@ export class SpaceShipsController {
         
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete(':id')
     async remove(@Param('id') id: number): Promise<void> {
         try {

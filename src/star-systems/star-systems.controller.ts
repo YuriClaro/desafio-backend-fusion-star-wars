@@ -4,11 +4,11 @@ import { StarSystem } from './star-system.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ValidationException } from 'src/exceptions/validation.exception';
 
-@UseGuards(JwtAuthGuard)
 @Controller('star-systems')
 export class StarSystemsController {
     constructor(private readonly starSystemService: StarSystemsService) {}
 
+    @UseGuards(JwtAuthGuard)
     @Post()
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true}))
     async create(@Body() createStarSystemaDto: StarSystem): Promise<StarSystem> {
@@ -53,6 +53,7 @@ export class StarSystemsController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Put(':id')
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true}))
     async update(@Param('id') id: number, @Body() updatedStarSystemDto: StarSystem): Promise<StarSystem> {
@@ -73,6 +74,7 @@ export class StarSystemsController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete(':id')
     async remove(@Param('id') id: number): Promise<void> {
         try {

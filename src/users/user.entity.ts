@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Affiliation } from "./users.affiliation.enum";
 
 @Entity()
 export class User {
@@ -10,5 +11,8 @@ export class User {
 
     @Column()
     password: string;
+
+    @Column()
+    affiliation: Affiliation;
   }
   

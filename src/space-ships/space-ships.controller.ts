@@ -3,6 +3,7 @@ import { SpaceShipsService } from './space-ships.service';
 import { SpaceShip } from './space-ship.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ValidationException } from 'src/exceptions/validation.exception';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('spaceships')
 export class SpaceShipsController {
@@ -11,6 +12,11 @@ export class SpaceShipsController {
     @UseGuards(JwtAuthGuard)
     @Post()
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true}))
+    @ApiOperation({ summary: 'Criar uma nova nave espacial' })
+    @ApiResponse({ status: 201, description: 'Nave criada com sucesso.', type: SpaceShip })
+    @ApiResponse({ status: 400, description: 'Solicitação inválida, verifique às informações.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto a nave estava sendo criada.' })
+    @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true }))
     async create(@Body() createSpaceShipaDto: SpaceShip): Promise<SpaceShip> {
         try {
             return await this.spaceshipService.create(createSpaceShipaDto);
@@ -24,6 +30,10 @@ export class SpaceShipsController {
     }
 
     @Get()
+    @ApiOperation({ summary: 'Obter todas as naves espaciais' })
+    @ApiResponse({ status: 200, description: 'Lista de naves retornada com sucesso.', type: [SpaceShip] })
+    @ApiResponse({ status: 404, description: 'Nenhuma nave foi encontrada.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto recuperava as naves espaciais.' })
     async findAll(): Promise<SpaceShip[]> {
         try {
             const spaceship = await this.spaceshipService.findAll();
@@ -37,6 +47,11 @@ export class SpaceShipsController {
     }
 
     @Get(':id')
+    @ApiOperation({ summary: 'Obter uma nave espacial pelo ID' })
+    @ApiParam({ name: 'id', description: 'ID da nave espacial', type: Number })
+    @ApiResponse({ status: 200, description: 'Nave retornada com sucesso.', type: SpaceShip })
+    @ApiResponse({ status: 404, description: 'Nave com o ID fornecido não encontrada.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto retornava a nave.' })
     async findOne(@Param('id') id: number): Promise<SpaceShip> {
         try {
             const spaceship = await this.spaceshipService.findSpaceShipById(id);
@@ -56,6 +71,12 @@ export class SpaceShipsController {
     @UseGuards(JwtAuthGuard)
     @Put(':id')
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true}))
+    @ApiOperation({ summary: 'Atualizar uma nave espacial pelo ID' })
+    @ApiParam({ name: 'id', description: 'ID da nave espacial', type: Number })
+    @ApiResponse({ status: 200, description: 'Nave atualizada com sucesso.', type: SpaceShip })
+    @ApiResponse({ status: 404, description: 'Nave com o ID fornecido não encontrada.' })
+    @ApiResponse({ status: 400, description: 'Solicitação inválida.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto retornava a nave.' })
     async update(@Param('id') id: number, @Body() updatedSpaceShipDto: SpaceShip): Promise<SpaceShip> {
         try {
             const updatedSpaceShip = await this.spaceshipService.update(id, updatedSpaceShipDto);
@@ -77,6 +98,12 @@ export class SpaceShipsController {
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
+    @ApiOperation({ summary: 'Remover uma nave espacial pelo ID' })
+    @ApiParam({ name: 'id', description: 'ID da nave espacial', type: Number })
+    @ApiResponse({ status: 204, description: 'Nave removida com sucesso.' })
+    @ApiResponse({ status: 404, description: 'Nave com o ID fornecido não encontrada.' })
+    @ApiResponse({ status: 400, description: 'Solicitação inválida.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto removia a nave.' })
     async remove(@Param('id') id: number): Promise<void> {
         try {
             const result = await this.spaceshipService.remove(id);

@@ -3,7 +3,9 @@ import { PlanetsService } from './planets.service';
 import { Planet } from './planet.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ValidationException } from 'src/exceptions/validation.exception';
+import { ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
 
+@ApiTags('Planetas')
 @Controller('planets')
 export class PlanetsController {
     constructor(private readonly planetService: PlanetsService) {}
@@ -11,6 +13,10 @@ export class PlanetsController {
     @UseGuards(JwtAuthGuard)
     @Post()
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true}))
+    @ApiOperation({ summary: 'Cria um novo planeta' })
+    @ApiResponse({ status: 201, description: 'O planeta foi criado com sucesso.', type: Planet })
+    @ApiResponse({ status: 400, description: 'Solicitação inválida, verifique as informações.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto o planeta estava sendo criado.' })
     async create(@Body() createPlanetaDto: Planet): Promise<Planet> {
         try {
             return await this.planetService.create(createPlanetaDto);
@@ -24,6 +30,10 @@ export class PlanetsController {
     }
 
     @Get()
+    @ApiOperation({ summary: 'Recupera todos os planetas' })
+    @ApiResponse({ status: 200, description: 'Os planetas foram recuperados com sucesso.', type: [Planet] })
+    @ApiResponse({ status: 404, description: 'Nenhum planeta foi encontrado.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto recuperava os planetas.' })
     async findAll(): Promise<Planet[]> {
         try {
             const planets = await this.planetService.findAll();
@@ -37,6 +47,11 @@ export class PlanetsController {
     }
 
     @Get(':id')
+    @ApiOperation({ summary: 'Recupera um planeta pelo ID' })
+    @ApiParam({ name: 'id', description: 'ID do planeta' })
+    @ApiResponse({ status: 200, description: 'O planeta foi recuperado com sucesso.', type: Planet })
+    @ApiResponse({ status: 404, description: 'Planeta com o ID especificado não foi encontrado.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto retornava o planeta.' })
     async findOne(@Param('id') id: number): Promise<Planet> {
         try {
             const planet = await this.planetService.findPlanetById(id);
@@ -56,6 +71,12 @@ export class PlanetsController {
     @UseGuards(JwtAuthGuard)
     @Put(':id')
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true}))
+    @ApiOperation({ summary: 'Atualiza um planeta pelo ID' })
+    @ApiParam({ name: 'id', description: 'ID do planeta' })
+    @ApiResponse({ status: 200, description: 'O planeta foi atualizado com sucesso.', type: Planet })
+    @ApiResponse({ status: 404, description: 'Planeta com o ID especificado não foi encontrado.' })
+    @ApiResponse({ status: 400, description: 'Solicitação inválida ou formato inválido para ID.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto atualizava o planeta.' })
     async update(@Param('id') id: number, @Body() updatedPlanetDto: Planet): Promise<Planet> {
         try {
             const updatedPlanet = await this.planetService.update(id, updatedPlanetDto);
@@ -76,6 +97,12 @@ export class PlanetsController {
     
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
+    @ApiOperation({ summary: 'Remove um planeta pelo ID' })
+    @ApiParam({ name: 'id', description: 'ID do planeta' })
+    @ApiResponse({ status: 200, description: 'O planeta foi removido com sucesso.' })
+    @ApiResponse({ status: 404, description: 'Planeta com o ID especificado não foi encontrado.' })
+    @ApiResponse({ status: 400, description: 'Formato inválido para ID.' })
+    @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto removia o planeta.' })
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         try {
             const result = await this.planetService.remove(id);

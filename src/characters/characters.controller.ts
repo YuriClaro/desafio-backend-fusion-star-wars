@@ -4,12 +4,13 @@ import { Character } from './character.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ValidationException } from 'src/exceptions/validation.exception';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { LoggerService } from '../logger/logger.service';
 
 @ApiTags('Characters')
 @Controller('characters')
 @ApiBearerAuth()
 export class CharactersController {
-    constructor(private readonly characterService: CharactersService) {}
+    constructor(private readonly characterService: CharactersService, private readonly loggerService : LoggerService) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -20,8 +21,10 @@ export class CharactersController {
     @ApiResponse({ status: 500, description: 'Erro inesperado enquanto o personagem estava sendo criado.'})
     async create(@Body() createCharacteraDto: Character): Promise<Character> {
         try {
+            this.loggerService.log('Criando um novo personagem.')
             return await this.characterService.create(createCharacteraDto);
         } catch (error) {
+            this.loggerService.error('Erro ao criar o personagem', error.stack)
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação Invalida, verifique às informações');
             } else {
@@ -37,12 +40,14 @@ export class CharactersController {
     @Get()
     async findAll(): Promise<Character[]> {
         try {
+            this.loggerService.log('Buscando todos os personagens')
             const character = await this.characterService.findAll();
             if (character.length === 0) {
                 throw new NotFoundException('Nenhum personagem foi encontrado.')
             }
             return character;
         } catch (error) {
+            this.loggerService.error('Erro ao buscar os personagens', error.stack)
             throw new InternalServerErrorException('Um erro inesperado aconteceu enquanto recuperava os personagens.')
         }
     }
@@ -56,11 +61,13 @@ export class CharactersController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto recuperava o personagem.' })
     async findOne(@Param('id') id: number): Promise<Character> {
         try {
+            this.loggerService.log(`Buscando personagem com ID: ${id}`)
             const character = await this.characterService.findCharacterById(id);
             if (!character) {
                 throw new NotFoundException(`Personagem com o id: ${id} não encontrado.`)
             } return character;
         } catch (error) {
+            this.loggerService.error(`Erro ao buscar personagem`, error.stack)
             if (error instanceof BadRequestException) {
                 throw new BadRequestException('Invalid ID format.');
             } else {
@@ -80,12 +87,14 @@ export class CharactersController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto atualizava o personagem.' })
     async update(@Param('id') id: number, @Body() updatedCharacterDto: Character): Promise<Character> {
         try {
+            this.loggerService.log(`Atualizando personagem com ID ${id}`);
             const updatedCharacter = await this.characterService.update(id, updatedCharacterDto);
             if(!updatedCharacter) {
                 throw new NotFoundException(`Personagem com o ID: ${id} não encontrado.`)
             }
             return updatedCharacter;
         } catch (error) {
+            this.loggerService.error('Erro enquanto atualiza o personagem.', error.stack);
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação inválida.')
             } else if (error instanceof BadRequestException) {
@@ -107,11 +116,13 @@ export class CharactersController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto deletava o personagem.' })
     async remove(@Param('id') id: number): Promise<void> {
         try {
+            this.loggerService.log(`Removendo personagem com ID: ${id}`);
             const result = await this.characterService.remove(id);
             if (!result) {
                 throw new NotFoundException(`Personagem com o ID: ${id} não encontrado.`);
             }
         } catch (error) {
+            this.loggerService.error('Erro enquanto removia o personagem.', error.stack);
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação inválida.')
             } else if (error instanceof BadRequestException) {

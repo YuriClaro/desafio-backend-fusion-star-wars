@@ -4,11 +4,12 @@ import { StarSystem } from './star-system.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ValidationException } from 'src/exceptions/validation.exception';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { LoggerService } from '../logger/logger.service';
 
 @ApiTags('Star Systems')
 @Controller('star-systems')
 export class StarSystemsController {
-    constructor(private readonly starSystemService: StarSystemsService) {}
+    constructor(private readonly starSystemService: StarSystemsService, private readonly loggerService : LoggerService) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -19,8 +20,10 @@ export class StarSystemsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto o sistema estelar estava sendo criado.' })
     async create(@Body() createStarSystemaDto: StarSystem): Promise<StarSystem> {
         try {
+            this.loggerService.log('Criando um novo sistema solar.')
             return await this.starSystemService.create(createStarSystemaDto);
         } catch (error) {
+            this.loggerService.error('Erro ao criar o sistema solar', error.stack)
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação Invalida, verifique às informações');
             } else {
@@ -36,12 +39,14 @@ export class StarSystemsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto recuperava os sistemas estelares.' })
     async findAll(): Promise<StarSystem[]> {
         try {
+            this.loggerService.log('Buscando todos os sistema solares')
             const starSystem = await this.starSystemService.findAll();
             if (starSystem.length === 0) {
                 throw new NotFoundException('Nenhum sistema solar foi encontrado.')
             }
             return starSystem;
         } catch (error) {
+            this.loggerService.error('Erro ao buscar os sistema solares', error.stack)
             throw new InternalServerErrorException('Um erro inesperado aconteceu enquanto recuperava os sistemas solares.')
         }
     }
@@ -54,12 +59,14 @@ export class StarSystemsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto recuperava o sistema estelar.' })
     async findOne(@Param('id') id: number): Promise<StarSystem> {
         try {
+            this.loggerService.log(`Buscando sistema solar com ID: ${id}`)
             const starSystem = await this.starSystemService.findStarSystemById(id);
             if (!starSystem) {
                 throw new NotFoundException(`Sistema solar com o ID: ${id} não encontrado.`)
             }
             return starSystem;
         } catch (error) {
+            this.loggerService.error(`Erro ao buscar sistema solar`, error.stack)
             if (error instanceof BadRequestException) {
                 throw new BadRequestException('Invalid ID format.');
             } else {
@@ -79,12 +86,14 @@ export class StarSystemsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto atualizava o sistema estelar.' })
     async update(@Param('id') id: number, @Body() updatedStarSystemDto: StarSystem): Promise<StarSystem> {
         try {
+            this.loggerService.log(`Atualizando sistema solar com ID ${id}`);
             const updatedStarSystem = await this.starSystemService.update(id, updatedStarSystemDto);
             if (!updatedStarSystem) {
                 throw new NotFoundException(`Sistema solar com o ID: ${id} não encontrado.`)
             }
             return updatedStarSystem;
         } catch (error) {
+            this.loggerService.error('Erro enquanto atualiza o sistema solar.', error.stack);
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação inválida.')
             } else if (error instanceof BadRequestException) {
@@ -104,11 +113,13 @@ export class StarSystemsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto removia o sistema estelar.' })
     async remove(@Param('id') id: number): Promise<void> {
         try {
+            this.loggerService.log(`Removendo sistema solar com ID: ${id}`);
             const result = await this.starSystemService.remove(id);
             if (!result) {
                 throw new NotFoundException(`Sistema solar com o ID: ${id} não encontrado.`);
             }
         } catch (error) {
+            this.loggerService.error('Erro enquanto removia o sistema solar.', error.stack);
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação inválida.')
             } else if (error instanceof BadRequestException) {

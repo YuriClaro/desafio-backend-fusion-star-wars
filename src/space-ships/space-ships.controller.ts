@@ -4,10 +4,12 @@ import { SpaceShip } from './space-ship.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ValidationException } from 'src/exceptions/validation.exception';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { LoggerService } from '../logger/logger.service';
 
+@ApiTags('SpaceShips')
 @Controller('spaceships')
 export class SpaceShipsController {
-    constructor(private readonly spaceshipService: SpaceShipsService) {}
+    constructor(private readonly spaceshipService: SpaceShipsService, private readonly loggerService: LoggerService) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -19,8 +21,10 @@ export class SpaceShipsController {
     @UsePipes(new ValidationPipe({ transform: true, forbidNonWhitelisted: true }))
     async create(@Body() createSpaceShipaDto: SpaceShip): Promise<SpaceShip> {
         try {
+            this.loggerService.log('Criando uma nova nave.')
             return await this.spaceshipService.create(createSpaceShipaDto);
         } catch (error) {
+            this.loggerService.error('Erro ao criar a nave', error.stack)
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação Invalida, verifique às informações');
             } else {
@@ -36,12 +40,14 @@ export class SpaceShipsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto recuperava as naves espaciais.' })
     async findAll(): Promise<SpaceShip[]> {
         try {
+            this.loggerService.log('Buscando todos as naves')
             const spaceship = await this.spaceshipService.findAll();
             if (spaceship.length === 0) {
                 throw new NotFoundException('Nenhuma nave foi encontrada.')
             }
             return spaceship;
         } catch (error) {
+            this.loggerService.error('Erro ao buscar as naves', error.stack)
             throw new InternalServerErrorException('Um erro inesperado aconteceu enquanto recuperava as naves espaciais.')
         }
     }
@@ -54,12 +60,14 @@ export class SpaceShipsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto retornava a nave.' })
     async findOne(@Param('id') id: number): Promise<SpaceShip> {
         try {
+            this.loggerService.log(`Buscando nave com ID: ${id}`)
             const spaceship = await this.spaceshipService.findSpaceShipById(id);
             if (!spaceship) {
                 throw new NotFoundException(`Nave com o ID: ${id} não encontrado.`)
             }
             return spaceship;
         } catch (error) {
+            this.loggerService.error(`Erro ao buscar nave`, error.stack)
             if (error instanceof BadRequestException) {
                 throw new BadRequestException('Invalid ID format.');
             } else {
@@ -79,12 +87,14 @@ export class SpaceShipsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto retornava a nave.' })
     async update(@Param('id') id: number, @Body() updatedSpaceShipDto: SpaceShip): Promise<SpaceShip> {
         try {
+            this.loggerService.log(`Atualizando nave com ID ${id}`);
             const updatedSpaceShip = await this.spaceshipService.update(id, updatedSpaceShipDto);
             if (!updatedSpaceShip) {
                 throw new NotFoundException(`Nave com o ID: ${id} não encontrado.`)
             }
             return updatedSpaceShip;
         } catch (error) {
+            this.loggerService.error('Erro enquanto atualiza a nave.', error.stack);
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação inválida.')
             } else if (error instanceof BadRequestException) {
@@ -106,11 +116,13 @@ export class SpaceShipsController {
     @ApiResponse({ status: 500, description: 'Um erro inesperado aconteceu enquanto removia a nave.' })
     async remove(@Param('id') id: number): Promise<void> {
         try {
+            this.loggerService.log(`Removendo nave com ID: ${id}`);
             const result = await this.spaceshipService.remove(id);
             if (!result) {
                 throw new NotFoundException(`Nave com o ID: ${id} não encontrado.`);
             }
         } catch (error) {
+            this.loggerService.error('Erro enquanto removia a nave.', error.stack);
             if (error instanceof ValidationException) {
                 throw new BadRequestException('Solicitação inválida.')
             } else if (error instanceof BadRequestException) {

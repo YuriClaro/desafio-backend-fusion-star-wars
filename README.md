@@ -1,83 +1,78 @@
-# Desafio BackEnd Fusion: **Criar** e **Gerenciar** a Galáxia Inspirada em Star Wars
+# Gerenciamento de Galáxias de Star Wars
 
-## Objetivo
-Desenvolver uma API backend que permita a criação, gerenciamento e visualização de uma galáxia inspirada em Star Wars, incluindo planetas, sistemas estelares, personagens e naves espaciais.
+Esta é a API de Gerenciamento de Galáxias do Star Wars, desenvolvida para o Desafio Fusion Back End. A API foi construída utilizando TypeScript e Node.js com o framework NestJS. 
 
-A API deve ser robusta, segura e eficiente, demonstrando habilidades em desenvolvimento backend.
+## Funcionalidades
 
-## Requisitos do Projeto
+- Gerenciamento de Planetas, Sistemas Solares, Personagens e Naves Espaciais.
+- É possível criar, listar, obter todos, obter um específico, atualizar e deletar um planeta, sistema solar, personagem ou nave espacial.
 
-### Estrutura da API
-- A API deve ser desenvolvida usando Node.js com NestJS ou Express.
+## Tecnologias Utilizadas
 
-- Utilizar TypeScript para tipagem estática. A API deve seguir os princípios RESTful.
+- **Node.js**,
+- **NestJS**,
+- **TypeScript**,
+- **JWT**,
+- **MySQL**,
+- **Swagger**,
+- **Heroku**,
+- **Winston**.
 
-### Entidades:
-- Planetas: Nome, clima, terreno, população.
-- Sistemas Estelares: Nome, descrição, lista de planetas.
-- Personagens: Nome, raça, afiliação (Jedi, Sith, Rebelde, etc.), planeta natal.
-- Naves Espaciais: Nome, modelo, fabricante, capacidade de passageiros.
+## Autenticação e Autorização
+- Os usuários são autenticados pelo JWT e possuem um tolken de acesso à end-points protegidos.
 
-## EndPoints:
+## Banco de Dados
+- **MySQL**: Onde esta armazenado todos os Planetas, Sistemas Solares, Personagens e Naves Espaciais.
 
-- **Planets**
-  - **POST 📤 /planets:** Criar um novo planeta.
-  - **GET 📥 /planets:** Listar todos os planetas.
-  - **GET 📥 /planets/:id:** Obter detalhes de um planeta específico.
-  - **PUT 🔄 /planets/:id:** Atualizar informações de um planeta.
-  - **DELETE 🗑 /planets/:id:** Deletar um planeta.
+## Documentação
+- Foi utilizado o Swagger para a documentação do projeto.
 
-- **Start Systems**
-  - **POST 📤 /star-systems:** Criar um novo sistema estelar.
-  - **GET 📥 /star-systems:** Listar todos os sistemas estelares.
-  - **GET 📥 /star-systems/:id:** Obter detalhes de um sistema estelar específico.
-  - **PUT 🔄 /star-systems/:id:** Atualizar informações de um sistema estelar
-  - **DELETE 🗑 /star-systems/:id**: Deletar um sistema estelar.
+## Deploy
+- link: https://star-wars-api-fusion-89843a8d185f.herokuapp.com
 
-- **Characters**
-  - **POST 📤 /characters:** Criar um novo personagem.
-  - **GET 📥 /characters:** Listar todos os personagens.
-  - **GET 📥 /characters/:id:** Obter detalhes de um personagem específico.
-  - **PUT 🔄 /characters/:id:** Atualizar informações de um personagem.
-  - **DELETE 🗑 /characters/:id:** Deletar um personagem.
+## Instalação
 
-- **SpaceShips**
-  - **POST 📤 /spaceships:** Criar uma nova nave espacial.
-  - **GET 📥 /spaceships:** Listar todas as naves espaciais.
-  - **GET 📥 /spaceships/:id:** Obter detalhes de uma nave espacial específica.
-  - **PUT 🔄 /spaceships/:id:** Atualizar informações de uma nave espacial.
-  - **DELETE 🗑 /spaceships/:id:** Deletar uma nave espacial.
+1. Clone o repositório:
+    ```bash
+    git clone https://github.com/seu-usuario/seu-repositorio.git
+    cd seu-repositorio
+    ```
 
-### Autenticação e Autorização
-- Implementar autenticação de usuários usando JWT.
-- Os usuários devem ser categorizados com base em afiliações como Jedi, Sith, Rebeldes, etc.
-- Proteger os endpoints para que apenas usuários autenticados possam criar, atualizar e deletar dados.
+2. Instale as dependências:
+    ```bash
+    npm install
+    ```
 
-### Banco de Dados
-- Usar qualquer banco de dados, relacional ou não-relacional.
-- Utilizar qualquer ORM de sua escolha.
+3. Configure o banco de dados MySQL no arquivo `ormconfig.json`:
+    ```json
+    {
+      "type": "mysql",
+      "host": "localhost",
+      "port": 3306,
+      "username": "seu-usuario",
+      "password": "sua-senha",
+      "database": "star-wars-db",
+      "entities": ["dist/**/*.entity{.ts,.js}"],
+      "synchronize": true
+    }
+    ```
 
-### Validação e Tratamento de Erros
-- Implementar validação de dados de entrada.Gerenciar e retornar mensagens de erro apropriadas.
+4. Execute as migrações (se houver):
+    ```bash
+    npm run typeorm migration:run
+    ```
 
-### Documentação da API (Opcional):
-- Documentar a API usando Swagger ou Postman (não obrigatória).
-- Incluir exemplos de requisições e respostas (schemas).
+5. Inicie a aplicação:
+    ```bash
+    npm run start:dev
+    ```
 
-### Testes (Opcional):
-- Escrever testes unitários e de integração para a API usando Jest (não obrigatória).
+## Uso
 
-### Tecnologias e Ferramentas
-- Linguagens: TypeScriptFrameworks: NestJS ou Express
+### Autenticação
 
-### Extras:
-- Deploy: Hospedar a API em um serviço como Heroku, AWS, ou DigitalOcean.
-- Logs e Monitoramento: Implementar logs e monitoramento para a API usando ferramentas como Winston ou Morgan.
+A API utiliza JWT para autenticação. Para acessar os endpoints protegidos, você precisa primeiro se autenticar e obter um token JWT.
 
-### Submissão
-- Repositório GitHub: Submeter o código em um repositório público no GitHub.
+### Documentação da API
 
-### Documentação:
-- Incluir um README.md detalhado com instruções de instalação, uso e qualquer informação relevante.
-- Demo: Fornecer um link para a API hospedada e a documentação.
-- Prazo prazo para submissão é de 15 dias  partir da data de início.
+A documentação da API pode ser acessada através do Swagger. Após iniciar a aplicação, acesse:

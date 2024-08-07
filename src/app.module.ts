@@ -13,6 +13,7 @@ import { SpaceShip } from './space-ships/space-ship.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity'
+import { LoggerService } from './logger/logger.service'; 
 
 @Module({
   imports: [
@@ -35,6 +36,6 @@ import { User } from './users/user.entity'
     AuthModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, LoggerService],
 })
 export class AppModule {}
